@@ -45,16 +45,16 @@
       <thead>
         <tr>
           <th>Sl. No.</th>
-          <th>Ticker</th>
           <th>Company Name</th>
+          <th>Ticker</th>
         </tr>
       </thead>
       {% for row in data %}
       <tbody>
         <tr>
           <td>{{ loop.index }}</td>
-          <td>{{ row[1] }}</td>
           <td>{{ row[0] }}</td>
+          <td>{{ row[1] }}</td>
         </tr>
       </tbody>
       {% endfor %}

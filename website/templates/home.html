@@ -32,7 +32,7 @@
       background-color: #ddd;
     }
     .scrollable-table {
-      max-height: 300px;
+      max-height: 870px;
       overflow-y: auto;
     }
   </style>
@@ -54,7 +54,7 @@
         <tr>
           <td>{{ loop.index }}</td>
           <td>{{ row[1] }}</td>
-          <td>{{ row[2] }}</td>
+          <td>{{ row[0] }}</td>
         </tr>
       </tbody>
       {% endfor %}

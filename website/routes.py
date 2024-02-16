@@ -15,3 +15,16 @@ def home():
     data = cur.fetchall()
 
     return render_template('home.html',data=data)
+
+@app.route('/dashboard/<string:ticker>')
+def viewDashboard(ticker):
+
+    conn=db_conn()
+    cur=conn.cursor()
+
+    select_query = f'''SELECT * FROM stocks where tickers='{ticker}';'''
+    cur.execute(select_query)
+    data = cur.fetchall()
+    print(data)
+
+    return render_template('dashboard.html',stockName=data[0][1],ticker=data[0][2])

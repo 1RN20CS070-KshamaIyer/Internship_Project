@@ -5,16 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <h1>{{ stockName }}</h1>
     <h2>{{ ticker }}</h2>
-    <div id="graph-container"></div>
+    <div id="graph-container">
+    <div id="graph-indicator">
+        
+    </div>
     <script>
         var graphData = {{ graph_json | safe }};
-        Plotly.plot('graph-container', graphData.data, graphData.layout);
+        Plotly.plot('graph-indicator', graphData.data, graphData.layout);
     </script>
+    <div id="fib-indicator">
+        
+    </div>
+    <script>
+        var fibData = {{ fib_json | safe }};
+        Plotly.plot('fib-indicator', fibData.data, fibData.layout);
+    </script>
+    </div>
 </body>
 </html>

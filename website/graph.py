@@ -35,13 +35,11 @@ def executeIndicator(data):
 
     # Update layout
     fig.update_layout(
-        width=1000,  
+        width=800,  
         height=900
     )
 
     fig.update_layout(xaxis_rangeslider_visible=False)
-    
-
     return fig
 def candlesticks(data):
 
@@ -265,5 +263,6 @@ def fib_retrace(data):
     fig.add_trace(go.Scatter(x=data.index, y=[third_level] * len(data), mode='lines', name='Fib 0.5'))
     fig.add_trace(go.Scatter(x=data.index, y=[fourth_level] * len(data), mode='lines', name='Fib 0.618'))
     fig.add_trace(go.Scatter(x=data.index, y=[min_value] * len(data), mode='lines', name='Min level'))
-
+    fig.update_layout(title_text="Fibonacci Retracement Levels",
+        title_x=0.5,width=500,height=500 )
     return fig

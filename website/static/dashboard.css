@@ -1,0 +1,39 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: normal;
+    margin-bottom: 20px;
+    color: #444;
+}
+
+.graph-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+#graph-indicator, #fib-indicator {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #fff;
+}
+
+/* Add some padding to body */
+body {
+    padding: 20px;
+}
+  

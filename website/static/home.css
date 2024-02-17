@@ -1,0 +1,81 @@
+/* Reset basic margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Body styling */
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    background-color: #f8f8f8;
+  }
+  
+  /* Container styling */
+  .container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  }
+  
+  /* Heading styling */
+  h1 {
+    font-family: "Open Sans", sans-serif;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #444;
+  }
+  
+  /* Table styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #e6e6e6;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  tr:hover {
+    background-color: #f2f2f2; /* Adjust hover color */
+  }
+  
+  /* Links */
+  a {
+    color: #333;
+    text-decoration: none; /* Remove underline */
+  }
+  
+  a:hover {
+    color: #666; /* Adjust hover color */
+  }
+  
+  /* Company name styling */
+  .company-name {
+    font-weight: bold;
+    color: #444;
+  }
+  
+  /* Ticker symbol styling */
+  .ticker-symbol {
+    color: #007bff;
+  }
+  
+  /* Scrollable table styling */
+  .scrollable-table {
+    max-height: 870px;
+    overflow-y: auto;
+  }
+  

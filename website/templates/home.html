@@ -3,43 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home Page</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      width: 80%;
-      margin: 20px auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
-    th {
-      background-color: #ccc;
-    }
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-    tr:hover {
-      background-color: #ddd;
-    }
-    .scrollable-table {
-      max-height: 870px;
-      overflow-y: auto;
-    }
-  </style>
+  <title>Stock Market Analysis</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
 </head>
 <body>
 
 <div class="container">
+  <h1>Stock Market Analysis</h1>
   <div class="scrollable-table">
     <table>
       <thead>
@@ -49,16 +19,15 @@
           <th>Ticker</th>
         </tr>
       </thead>
-      {% for row in data %}
       <tbody>
-        <tr>
-          <td>{{ loop.index }}</td>
-          <td><a href="{{ url_for('viewDashboard', ticker=row[1]) }}">{{ row[0] }}</a></td>
-          <td>{{ row[1] }}</td>
-
-        </tr>
+        {% for row in data %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td class="company-name"><a href="{{ url_for('viewDashboard', ticker=row[1]) }}">{{ row[0] }}</a></td>
+            <td class="ticker-symbol">{{ row[1] }}</td>
+          </tr>
+        {% endfor %}
       </tbody>
-      {% endfor %}
     </table>
   </div>
 </div>

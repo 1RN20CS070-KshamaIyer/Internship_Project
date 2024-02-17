@@ -4,7 +4,7 @@ import psycopg2
 import yfinance as yf
 import numpy as np
 import datetime as dt
-from website.graph import executeIndicator
+from website.graph import executeIndicator,fib_retrace
 from pandas_datareader import data as pdr
 
 
@@ -41,12 +41,14 @@ def viewDashboard(ticker):
     fig = executeIndicator(priceData)
 
     graph_json = fig.to_json()
+    fib = fib_retrace(priceData)
+    fib_json=fib.to_json()
 
     cur.close()
     conn.close()
 
 
-    return render_template('dashboard.html', graph_json=graph_json,stockName=stockData[0][1], ticker=stockData[0][2])
+    return render_template('dashboard.html', graph_json=graph_json,fib_json=fib_json,stockName=stockData[0][1], ticker=stockData[0][2])
 
 
 @app.route('/test')

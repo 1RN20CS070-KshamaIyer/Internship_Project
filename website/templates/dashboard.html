@@ -4,9 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .container {
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <h1>{{ stockName }}</h1>
     <h2>{{ ticker }}</h2>
+    <div class="container">
+        <h1>Select an option</h1>
+        <form id="myForm" method="POST" action="/dashboard/{{ ticker }}">
+            <select name="option" id="option">
+                <option value="" disabled selected>Select an option</option>
+                <option value="SMA">SMA</option>
+                <option value="ATR">ATR</option>
+                <option value="Stochastic">Stochastic</option>
+                <option value="MACD">MACD</option>
+                <option value="Bollinger Bands">Bollinger Bands</option>
+                <option value="Rate of Change">Rate of Change</option>
+                <option value="RSI">RSI</option>
+                <option value="Fibonnaci Retracement">Fibonnaci Retracement</option>
+            </select>
+            <button type="submit">Submit</button>
+        </form>
+        <div class="selected-option-placeholder" id="selectedOptionPlaceholder"></div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            // When form is submitted
+            $('#myForm').submit(function(event) {
+                event.preventDefault(); // Prevent default form submission
+                var selectedValue = $('#option').val(); // Get selected option value
+                $('#selectedOptionPlaceholder').text("You selected: " + selectedValue); // Update placeholder text
+                // Perform AJAX request to fetch data based on selected option
+                $.ajax({
+                    type: 'POST',
+                    url: '/dashboard/{{ ticker }}',
+                    data: {option: selectedValue},
+                    success: function(response) {
+                        // Handle successful response from backend
+                        // You can update the UI with the received data here
+                    },
+                    error: function(error) {
+                        console.log(error); // Log any errors to the console
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

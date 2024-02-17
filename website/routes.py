@@ -1,7 +1,10 @@
-from flask import render_template,url_for,redirect,request,send_file,jsonify
+from flask import render_template,url_for,redirect,request,send_file,jsonify,session
 from website import app
 import psycopg2
-
+import yfinance as yf
+import numpy as np
+import datetime as dt
+from website.TAanalysis import executeIndicator
 def db_conn():
     conn = psycopg2.connect(database="mydatabase", host="localhost", user="myuser",password="mypassword",port="5432")
     return conn
@@ -16,15 +19,30 @@ def home():
 
     return render_template('home.html',data=data)
 
-@app.route('/dashboard/<string:ticker>')
+@app.route('/dashboard/<string:ticker>', methods=['GET', 'POST'])
 def viewDashboard(ticker):
-
-    conn=db_conn()
-    cur=conn.cursor()
+    conn = db_conn()
+    cur = conn.cursor()
 
     select_query = f'''SELECT * FROM stocks where tickers='{ticker}';'''
     cur.execute(select_query)
-    data = cur.fetchall()
-    print(data)
+    stockData = cur.fetchall()
+    print(stockData)
 
-    return render_template('dashboard.html',stockName=data[0][1],ticker=data[0][2])
+    # Getting the historical data for the ticker
+    tickerobj = yf.Ticker(ticker)
+    priceData = tickerobj.history(period='1d', start='2024-1-1', end=dt.datetime.today())
+    priceData['Log_Returns'] = np.log(priceData['Close'] / priceData['Close'].shift(1))
+
+    selected_indicator = session.get('selected_indicator', 'SMA')
+
+    if request.method == 'POST':
+        indicator = request.form['option']
+        print(indicator)
+        session['selected_indicator'] = indicator  # Store the selected indicator in the session
+        fig = executeIndicator(indicator, priceData)
+    else:
+        # Use the previously selected indicator if available
+        fig = executeIndicator(selected_indicator, priceData) if selected_indicator else None
+
+    return render_template('dashboard.html', stockName=stockData[0][1], ticker=stockData[0][2], fig=fig)

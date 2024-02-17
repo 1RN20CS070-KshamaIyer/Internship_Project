@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from plotly.subplots import make_subplots
 
-def executeIndicator(indicator,data):
+def executIndicator(indicator,data):
 
     if indicator=='SMA':
         fig=call_SMA(data)
@@ -39,10 +39,7 @@ def call_SMA(data):
     fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
     fig.add_trace(go.Scatter(x=data.index, y=data['SMA_5'], mode='lines', name='SMA 5'))
     fig.add_trace(go.Scatter(x=data.index, y=data['SMA_20'], mode='lines', name='SMA 20'))
-
-    graph_json = fig.to_json()
-
-    return graph_json
+    return fig
 
 def atr(high, low, close, n=14):
     tr = np.amax(np.vstack(((high - low).to_numpy(), (abs(high - close)).to_numpy(), (abs(low - close)).to_numpy())).T, axis=1)
@@ -61,9 +58,7 @@ def call_ATR(data):
 
     # Update layout for better visualization
     fig.update_layout(xaxis_rangeslider_visible=True)
-    graph_json = fig.to_json()
-
-    return graph_json
+    return fig
 
 def call_stochastic(data):
     data['Lowest_5D'] = data['Low'].rolling(window = 5).min()
@@ -91,9 +86,7 @@ def call_stochastic(data):
 
     # Update layout for better visualization
     fig.update_layout(xaxis_rangeslider_visible=True)
-    graph_json = fig.to_json()
-
-    return graph_json
+    return fig
 
 def call_macd(data):
     print("Calling MACD")
@@ -111,9 +104,7 @@ def call_macd(data):
 
     # Update layout for better visualization
     fig.update_layout(xaxis_rangeslider_visible=True)
-    graph_json = fig.to_json()
-
-    return graph_json
+    return fig
 
 def call_bollinger(data):
     data['15MA'] = data['Close'].rolling(window=15).mean()
@@ -133,9 +124,7 @@ def call_bollinger(data):
 
     # Update layout for better visualization
     main_fig.update_layout(xaxis_rangeslider_visible=True)
-    graph_json = fig.to_json()
-
-    return graph_json
+    return main_fig
 
 def call_rac(data):
     data['RC'] = data['Close'].pct_change(periods = 20)
@@ -149,9 +138,7 @@ def call_rac(data):
 
     # Update layout for better visualization
     fig.update_layout(xaxis_rangeslider_visible=True)
-    graph_json = fig.to_json()
-
-    return graph_json
+    return fig
 
 def call_rsi(data):
     data['Diff'] = data['Close'].transform(lambda x: x.diff())
@@ -184,9 +171,7 @@ def call_rsi(data):
     fig.add_trace(rsi_trace, row=2, col=1)
 
     fig.update_layout(xaxis_rangeslider_visible=True)
-    graph_json = fig.to_json()
-
-    return graph_json
+    return fig
 
 def fib_retrace(data):
       # Fibonacci constants
@@ -210,6 +195,4 @@ def fib_retrace(data):
     fig.add_trace(go.Scatter(x=data.index, y=[fourth_level] * len(data), mode='lines', name='Fib 0.618'))
     fig.add_trace(go.Scatter(x=data.index, y=[min_value] * len(data), mode='lines', name='Min level'))
 
-    graph_json = fig.to_json()
-
-    return graph_json
+    return fig

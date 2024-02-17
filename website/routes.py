@@ -27,22 +27,19 @@ def viewDashboard(ticker):
     select_query = f'''SELECT * FROM stocks where tickers='{ticker}';'''
     cur.execute(select_query)
     stockData = cur.fetchall()
-    print(stockData)
 
-    # Getting the historical data for the ticker
     tickerobj = yf.Ticker(ticker)
     priceData = tickerobj.history(period='1d', start='2024-1-1', end=dt.datetime.today())
     priceData['Log_Returns'] = np.log(priceData['Close'] / priceData['Close'].shift(1))
 
-    selected_indicator = session.get('selected_indicator', 'SMA')
-
     if request.method == 'POST':
         indicator = request.form['option']
-        print(indicator)
         session['selected_indicator'] = indicator  # Store the selected indicator in the session
-        fig = executeIndicator(indicator, priceData)
-    else:
-        # Use the previously selected indicator if available
-        fig = executeIndicator(selected_indicator, priceData) if selected_indicator else None
+        graph_json1 = executeIndicator(indicator, priceData)
+        return render_template('dashboard.html', stockName=stockData[0][1], ticker=stockData[0][2], graph_json=graph_json1)
+    
+    # Check if there's a selected indicator in the session, if not, default to 'ATR'
+    selected_indicator = session.get('selected_indicator', 'SMA')
+    graph_json = executeIndicator(selected_indicator, priceData)
 
-    return render_template('dashboard.html', stockName=stockData[0][1], ticker=stockData[0][2], fig=fig)
+    return render_template('dashboard.html', stockName=stockData[0][1], ticker=stockData[0][2], graph_json=graph_json)

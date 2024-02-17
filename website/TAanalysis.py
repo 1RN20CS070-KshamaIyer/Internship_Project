@@ -24,6 +24,10 @@ def executeIndicator(indicator,data):
         fig=fib_retrace(data)
     return fig.to_json()
 
+def candlesticks(data):
+    fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
+    return fig
+
 def call_SMA(data):
     data['SMA_5']=data['Close'].rolling(window=5).mean()
     data['SMA_20']=data['Close'].rolling(window=20).mean()
@@ -32,6 +36,7 @@ def call_SMA(data):
     fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
     fig.add_trace(go.Scatter(x=data.index, y=data['SMA_5'], mode='lines', name='SMA 5'))
     fig.add_trace(go.Scatter(x=data.index, y=data['SMA_20'], mode='lines', name='SMA 20'))
+    fig.update_layout(xaxis_rangeslider_visible=False)
     return fig
 
 def atr(high, low, close, n=14):
@@ -45,12 +50,12 @@ def call_ATR(data):
     atr_trace = go.Scatter(x=data.index, y=data['ATR'], mode='lines', name='ATR')
 
     # Create subplots
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[0.8, 0.2])
+    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[1, 0.3])
     fig.add_trace(main_fig.data[0], row=1, col=1)
     fig.add_trace(atr_trace, row=2, col=1)
 
     # Update layout for better visualization
-    fig.update_layout(xaxis_rangeslider_visible=True)
+    fig.update_layout(xaxis_rangeslider_visible=False)
     return fig
 
 def call_stochastic(data):
@@ -72,13 +77,13 @@ def call_stochastic(data):
     stoch_trace2 = go.Scatter(x=data.index, y=data['Stochastic_%D_15'], mode='lines', name='Stochastic_%D_15')
 
     # Create subplots
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[0.8, 0.2])
+    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[1, 0.3])
     fig.add_trace(main_fig.data[0], row=1, col=1)
     fig.add_trace(stoch_trace1, row=2, col=1)
     fig.add_trace(stoch_trace2, row=2, col=1)
 
     # Update layout for better visualization
-    fig.update_layout(xaxis_rangeslider_visible=True)
+    fig.update_layout(xaxis_rangeslider_visible=False)
     return fig
 
 def call_macd(data):
@@ -117,22 +122,13 @@ def call_macd(data):
     )
 
     # Create subplots and add traces
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5, row_heights=[0.8, 0.2])
+    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5, row_heights=[1, 0.3])
     fig.add_trace(main_fig.data[0], row=1, col=1)
     fig.add_trace(macd_trace, row=2, col=1)
     fig.add_trace(signal_trace, row=2, col=1)
 
     # Update layout
-    fig.update_layout(
-        xaxis_rangeslider_visible=True,
-        margin=dict(
-            l=10,
-            r=10,
-            b=10,
-            t=10,
-            pad=4
-        )
-    )
+    fig.update_layout(xaxis_rangeslider_visible=False)
 
     return fig
 
@@ -154,7 +150,7 @@ def call_bollinger(data):
     fig.add_trace(bollinger_trace3)
 
     # Update layout for better visualization
-    fig.update_layout(xaxis_rangeslider_visible=True)
+    fig.update_layout(xaxis_rangeslider_visible=False)
     return fig
 
 def call_rac(data):
@@ -163,12 +159,12 @@ def call_rac(data):
     main_fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
     racd_trace = go.Scatter(x=data.index, y=data['RC'], mode='lines', name='RC')
 
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[0.8, 0.2])
+    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[1, 0.3])
     fig.add_trace(main_fig.data[0], row=1, col=1)
     fig.add_trace(racd_trace, row=2, col=1)
 
     # Update layout for better visualization
-    fig.update_layout(xaxis_rangeslider_visible=True)
+    fig.update_layout(xaxis_rangeslider_visible=False)
     return fig
 
 def call_rsi(data):
@@ -207,7 +203,7 @@ def call_rsi(data):
     )
 
     # Create subplots and add traces
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5, row_heights=[0.8, 0.2])
+    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5, row_heights=[0.7, 0.3])
     fig.add_trace(main_fig.data[0], row=1, col=1)
     fig.add_trace(rsi_trace, row=2, col=1)
 
@@ -216,16 +212,7 @@ def call_rsi(data):
         fig.add_hline(y=y_level, line_dash='dash', line_color='gray', name=line_name, row=2, col=1)
 
     # Update layout
-    fig.update_layout(
-        xaxis_rangeslider_visible=True,
-        margin=dict(
-            l=10,
-            r=10,
-            b=10,
-            t=10,
-            pad=4
-        )
-    )
+    fig.update_layout(xaxis_rangeslider_visible=False)
 
     return fig
 
@@ -252,4 +239,5 @@ def fib_retrace(data):
     fig.add_trace(go.Scatter(x=data.index, y=[fourth_level] * len(data), mode='lines', name='Fib 0.618'))
     fig.add_trace(go.Scatter(x=data.index, y=[min_value] * len(data), mode='lines', name='Min level'))
 
+    fig.update_layout(xaxis_rangeslider_visible=False)
     return fig

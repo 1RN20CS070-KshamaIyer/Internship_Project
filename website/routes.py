@@ -31,12 +31,14 @@ def viewDashboard(ticker):
 
     # Getting the historical data for the ticker
     tickerobj = yf.Ticker(ticker)
-    priceData = tickerobj.history(period='1d', start='2024-1-1', end=dt.datetime.today())
+    priceData = tickerobj.history(period='1d', start='2023-6-1', end=dt.datetime.today())
     priceData['Log_Returns'] = np.log(priceData['Close'] / priceData['Close'].shift(1))
 
     # Generate graphs for all indicators
     graph_json_dict = {}
     for indicator in ['SMA', 'ATR', 'Stochastic', 'MACD', 'Bollinger bands', 'rate of change', 'RSI', 'Fibonnaci Retracement']:
         graph_json_dict[indicator] = executeIndicator(indicator, priceData)
+
+    
 
     return render_template('dashboard.html', stockName=stockData[0][1], ticker=stockData[0][2], graph_json_dict=graph_json_dict)

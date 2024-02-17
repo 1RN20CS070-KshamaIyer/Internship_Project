@@ -35,9 +35,6 @@ def viewDashboard(ticker):
     priceData = tickerobj.history(period='1d', start='2023-7-1', end=dt.datetime.today())
     priceData['Log_Returns'] = np.log(priceData['Close'] / priceData['Close'].shift(1))
 
-
-    print(priceData)
-
     fig = executeIndicator(priceData)
 
     graph_json = fig.to_json()
@@ -68,7 +65,6 @@ def test(ticker):
 
     if request.method == 'POST':
         indicator = request.form['option']
-    print(indicator)
     graph_json = executeIndicator(indicator, priceData)
 
     return render_template('test.html',graph_json=graph_json,ticker=stockData[0][2],stockName=stockData[0][1])

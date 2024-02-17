@@ -79,6 +79,14 @@
     overflow-y: auto;
   }
   
-  .search-panel {
-    margin-bottom: 20px;
+  .search-container {
+    width: 300px; /* Adjust as needed */
+    margin: 20px 0px;
+  }
+  .search-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
   }

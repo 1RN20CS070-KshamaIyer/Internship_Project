@@ -94,7 +94,7 @@ def call_macd(data):
     data['MACD'] = data['15Ewm'] - data['5Ewm']
 
     main_fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
-    macd_trace = go.Scatter(x=data.index, y=data['MACD'], mode='lines', name='ATR')
+    macd_trace = go.Scatter(x=data.index, y=data['MACD'], mode='lines', name='MACD')
 
     # Create subplots
     fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[0.8, 0.2])
@@ -111,19 +111,21 @@ def call_bollinger(data):
     data['upperband'] = data['15MA'] + 2*data['SD']
     data['lowerband'] = data['15MA'] - 2*data['SD']
     
-    main_fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
+    fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
     bollinger_trace1 = go.Scatter(x=data.index, y=data['upperband'], mode='lines', name='Upperband')
     bollinger_trace2 = go.Scatter(x=data.index, y=data['lowerband'], mode='lines', name='Lowerband')
     bollinger_trace3 = go.Scatter(x=data.index, y=data['15MA'], mode='lines', name='SMA_15')
 
     # Create subplots
-    main_fig.add_trace(bollinger_trace1)
-    main_fig.add_trace(bollinger_trace2)
-    main_fig.add_trace(bollinger_trace3)
+    fig.add_trace(bollinger_trace1)
+    fig.add_trace(bollinger_trace2)
+    fig.add_trace(bollinger_trace3)
 
     # Update layout for better visualization
-    main_fig.update_layout(xaxis_rangeslider_visible=True)
-    return main_fig
+    fig.update_layout(xaxis_rangeslider_visible=True)
+    graph_json = fig.to_json()
+
+    return graph_json
 
 def call_rac(data):
     data['RC'] = data['Close'].pct_change(periods = 20)

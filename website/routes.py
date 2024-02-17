@@ -19,7 +19,7 @@ def home():
 
     return render_template('home.html',data=data)
 
-@app.route('/dashboard/<string:ticker>', methods=['GET', 'POST'])
+@app.route('/dashboard/<string:ticker>', methods=['GET'])
 def viewDashboard(ticker):
     conn = db_conn()
     cur = conn.cursor()
@@ -34,15 +34,9 @@ def viewDashboard(ticker):
     priceData = tickerobj.history(period='1d', start='2024-1-1', end=dt.datetime.today())
     priceData['Log_Returns'] = np.log(priceData['Close'] / priceData['Close'].shift(1))
 
-    selected_indicator = session.get('selected_indicator', 'SMA')
+    # Generate graphs for all indicators
+    graph_json_dict = {}
+    for indicator in ['SMA', 'ATR', 'Stochastic', 'MACD', 'Bollinger bands', 'rate of change', 'RSI', 'Fibonnaci Retracement']:
+        graph_json_dict[indicator] = executeIndicator(indicator, priceData)
 
-    if request.method == 'POST':
-        indicator = request.form['option']
-        print(indicator)
-        session['selected_indicator'] = indicator  # Store the selected indicator in the session
-        fig = executeIndicator(indicator, priceData)
-    else:
-        # Use the previously selected indicator if available
-        fig = executeIndicator(selected_indicator, priceData) if selected_indicator else None
-
-    return render_template('dashboard.html', stockName=stockData[0][1], ticker=stockData[0][2], fig=fig)
+    return render_template('dashboard.html', stockName=stockData[0][1], ticker=stockData[0][2], graph_json_dict=graph_json_dict)

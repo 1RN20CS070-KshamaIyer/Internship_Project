@@ -6,7 +6,7 @@ import numpy as np
 import datetime as dt
 from website.graph import executeIndicator,fib_retrace
 from pandas_datareader import data as pdr
-from website.FAanalysis import load_news,applySentimentAnalysis,drawGraph
+from website.FAanalysis import load_news,applySentimentAnalysis,drawGraph,getAdditionalInfo
 
 
 def db_conn():
@@ -48,4 +48,7 @@ def viewDashboard(ticker):
     pos,neg = applySentimentAnalysis(news_data)
     sentiment_json=drawGraph(pos,neg)
 
-    return render_template('dashboard.html', graph_json=graph_json,fib_json=fib_json,sentiment_json=sentiment_json,stockName=stockData[0][1], ticker=stockData[0][2])
+    overview = getAdditionalInfo(ticker)
+    print(overview)
+
+    return render_template('dashboard.html', graph_json=graph_json,fib_json=fib_json,sentiment_json=sentiment_json,stockName=stockData[0][1], ticker=stockData[0][2],overview=overview)

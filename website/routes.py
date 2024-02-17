@@ -6,6 +6,7 @@ import numpy as np
 import datetime as dt
 from website.graph import executeIndicator,fib_retrace
 from pandas_datareader import data as pdr
+from website.FAanalysis import load_news
 
 
 def db_conn():
@@ -30,13 +31,12 @@ def viewDashboard(ticker):
     select_query = f'''SELECT * FROM stocks where tickers='{ticker}';'''
     cur.execute(select_query)
     stockData = cur.fetchall()
+    cur.close()
+    conn.close()
 
     tickerobj = yf.Ticker(ticker)
     priceData = tickerobj.history(period='1d', start='2023-7-1', end=dt.datetime.today())
     priceData['Log_Returns'] = np.log(priceData['Close'] / priceData['Close'].shift(1))
-
-
-    print(priceData)
 
     fig = executeIndicator(priceData)
 
@@ -44,31 +44,6 @@ def viewDashboard(ticker):
     fib = fib_retrace(priceData)
     fib_json=fib.to_json()
 
-    cur.close()
-    conn.close()
-
+    news_data=load_news(ticker)
 
     return render_template('dashboard.html', graph_json=graph_json,fib_json=fib_json,stockName=stockData[0][1], ticker=stockData[0][2])
-
-
-@app.route('/test')
-def test(ticker):
-    conn = db_conn()
-    cur = conn.cursor()
-
-    select_query = f'''SELECT * FROM stocks where tickers='{ticker}';'''
-    cur.execute(select_query)
-    stockData = cur.fetchall()
-
-    tickerobj = yf.Ticker(ticker)
-    priceData = tickerobj.history(period='1d', start='2024-1-1', end=dt.datetime.today())
-    priceData['Log_Returns'] = np.log(priceData['Close'] / priceData['Close'].shift(1))
-
-    indicator = 'SMA'
-
-    if request.method == 'POST':
-        indicator = request.form['option']
-    print(indicator)
-    graph_json = executeIndicator(indicator, priceData)
-
-    return render_template('test.html',graph_json=graph_json,ticker=stockData[0][2],stockName=stockData[0][1])

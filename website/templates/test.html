@@ -1,56 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dropdown Demo</title>
-    <style>
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            text-align: center;
-            padding: 20px;
-        }
-
-        select {
-            padding: 10px;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-
-        .result {
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 80%;
+      margin: 20px auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #ccc;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    tr:hover {
+      background-color: #ddd;
+    }
+    .scrollable-table {
+      max-height: 870px;
+      overflow-y: auto;
+    }
+    .search-panel {
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
-
 <body>
-    <div class="container">
-        <h1>Select an option</h1>
-        <form method="POST" action="/test">
-            <select name="option" id="option">
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-            </select>
-            <button type="submit">Submit</button>
-        </form>
-        {% if selected_option %}
-        <div class="result">
-            <h2>You selected: {{ selected_option }}</h2>
-            <!-- Render your data based on the selected option here -->
-        </div>
-        {% endif %}
-    </div>
-</body>
 
+<div class="container">
+  <div class="search-panel">
+    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search for company name...">
+  </div>
+  <div class="scrollable-table">
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>Sl. No.</th>
+          <th>Company Name</th>
+          <th>Ticker</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td><a href="{{ url_for('viewDashboard', ticker=row[1]) }}">{{ row[0] }}</a></td>
+          <td>{{ row[1] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  function filterTable() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("dataTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[1]; // Index 1 for Company Name column
+      console.log(td)
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+  }
+</script>
+
+</body>
 </html>

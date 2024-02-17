@@ -9,9 +9,12 @@
 <body>
 
 <div class="container">
+  <div class="search-panel">
+    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search for company name...">
+  </div>
   <h1>Stock Market Analysis</h1>
   <div class="scrollable-table">
-    <table>
+    <table id="dataTable">
       <thead>
         <tr>
           <th>Sl. No.</th>
@@ -31,6 +34,27 @@
     </table>
   </div>
 </div>
-
+<script>
+  function filterTable() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("dataTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[1];
+      console.log(td)
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+  }
+</script>
 </body>
 </html>
+

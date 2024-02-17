@@ -56,3 +56,17 @@ def drawGraph(good,bad):
     fig.update_traces(textposition='inside', textinfo='percent')
     fig.update_layout(title='Sentiment Analysis Pie Chart')
     return fig.to_json()
+
+def getAdditionalInfo(ticker):
+    fin_url='https://finviz.com/quote.ashx?t='+ticker+'&p=d'
+    req=Request(fin_url,headers={'user-agent':'my-app'})
+    response=urlopen(req)
+    html=BeautifulSoup(response, 'html')
+    add_table=html.find('div',"screener_snapshot-table-wrapper")
+    parsed_data={}
+    for row in add_table.findAll('tr'):
+        cells = row.find_all('td')
+        row_data = [cell.text.strip() for cell in cells]
+        for i in range(0,12,2):
+            parsed_data[row_data[i]]=row_data[i+1]
+    return parsed_data

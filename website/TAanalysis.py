@@ -8,28 +8,21 @@ def executeIndicator(indicator,data):
 
     if indicator=='SMA':
         fig=call_SMA(data)
-        return fig
     elif indicator=='ATR':
         fig=call_ATR(data)
-        return fig
     elif indicator=='Stochastic':
         fig=call_stochastic(data)
-        return fig
     elif indicator=='MACD':
         fig=call_macd(data)
-        return fig
     elif indicator=='Bollinger bands':
         fig=call_bollinger(data)
-        return fig
     elif indicator=='rate of change':
         fig=call_rac(data)
-        return fig
     elif indicator=='RSI':
         fig=call_rsi(data)
-        return fig
     elif indicator=='Fibonnaci Retracement':
         fig=fib_retrace(data)
-        return fig
+    return fig.to_json()
 
 def call_SMA(data):
     data['SMA_5']=data['Close'].rolling(window=5).mean()
@@ -89,21 +82,60 @@ def call_stochastic(data):
     return fig
 
 def call_macd(data):
-    data['5Ewm'] = data['Close'].ewm(span=5, adjust=False).mean()
-    data['15Ewm'] = data['Close'].ewm(span=15, adjust=False).mean()
-    data['MACD'] = data['15Ewm'] - data['5Ewm']
 
-    main_fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
-    macd_trace = go.Scatter(x=data.index, y=data['MACD'], mode='lines', name='MACD')
+    # Calculate MACD components
+    data['12Ewm'] = data['Close'].ewm(span=12, adjust=False).mean()
+    data['26Ewm'] = data['Close'].ewm(span=26, adjust=False).mean()
+    data['MACD'] = data['26Ewm'] - data['12Ewm']
+    data['Signal'] = data['MACD'].ewm(span=9, adjust=False).mean()
 
-    # Create subplots
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[0.8, 0.2])
+    # Create candlestick chart
+    main_fig = go.Figure(data=[
+        go.Candlestick(
+            x=data.index,
+            open=data['Open'],
+            close=data['Close'],
+            high=data['High'],
+            low=data['Low']
+        )
+    ])
+
+    # Create MACD and signal line traces
+    macd_trace = go.Scatter(
+        x=data.index,
+        y=data['MACD'],
+        mode='lines',
+        name='MACD',
+        line=dict(color='blue', width=2)
+    )
+    signal_trace = go.Scatter(
+        x=data.index,
+        y=data['Signal'],
+        mode='lines',
+        name='Signal',
+        line=dict(color='orange', width=2)
+    )
+
+    # Create subplots and add traces
+    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5, row_heights=[0.8, 0.2])
     fig.add_trace(main_fig.data[0], row=1, col=1)
     fig.add_trace(macd_trace, row=2, col=1)
+    fig.add_trace(signal_trace, row=2, col=1)
 
-    # Update layout for better visualization
-    fig.update_layout(xaxis_rangeslider_visible=True)
+    # Update layout
+    fig.update_layout(
+        xaxis_rangeslider_visible=True,
+        margin=dict(
+            l=10,
+            r=10,
+            b=10,
+            t=10,
+            pad=4
+        )
+    )
+
     return fig
+
 
 def call_bollinger(data):
     data['15MA'] = data['Close'].rolling(window=15).mean()
@@ -123,9 +155,7 @@ def call_bollinger(data):
 
     # Update layout for better visualization
     fig.update_layout(xaxis_rangeslider_visible=True)
-    graph_json = fig.to_json()
-
-    return graph_json
+    return fig
 
 def call_rac(data):
     data['RC'] = data['Close'].pct_change(periods = 20)
@@ -142,37 +172,63 @@ def call_rac(data):
     return fig
 
 def call_rsi(data):
-    data['Diff'] = data['Close'].transform(lambda x: x.diff())
-    data['Up'] = data['Diff']
-    data.loc[(data['Up']<0), 'Up'] = 0
+    length = 14  # Length for RSI calculation
 
-    data['Down'] = data['Diff']
-    data.loc[(data['Down']>0), 'Down'] = 0 
-    data['Down'] = abs(data['Down'])
+    # Calculate gains and losses using diff and rolling window
+    gains = data['Close'].diff()
+    gains[gains < 0] = 0  # Set negative gains to zero
+    losses = -data['Close'].diff()
+    losses[losses < 0] = 0  # Set negative losses to zero
+    avg_gain = gains.rolling(window=length).mean()
+    avg_loss = losses.rolling(window=length).mean()
 
-    data['avg_5up'] = data['Up'].rolling(window=5).mean()
-    data['avg_5down'] = data['Down'].rolling(window=5).mean()
+    # Calculate RS and RSI
+    data['RS'] = avg_gain / avg_loss
+    data['RSI'] = 100 - (100 / (1 + data['RS']))
 
-    data['avg_15up'] = data['Up'].rolling(window=15).mean()
-    data['avg_15down'] = data['Down'].rolling(window=15).mean()
+    # Create candlestick chart
+    main_fig = go.Figure(data=[
+        go.Candlestick(
+            x=data.index,
+            open=data['Open'],
+            close=data['Close'],
+            high=data['High'],
+            low=data['Low']
+        )
+    ])
 
-    data['RS_5'] = data['avg_5up'] / data['avg_5down']
-    data['RS_15'] = data['avg_15up'] / data['avg_15down']
+    # Create RSI and smoothed RSI traces
+    rsi_trace = go.Scatter(
+        x=data.index,
+        y=data['RSI'],
+        mode='lines',
+        name='RSI',
+        line=dict(color='blue', width=2)
+    )
 
-    data['RSI_5'] = 100 - (100/(1+data['RS_5']))
-    data['RSI_15'] = 100 - (100/(1+data['RS_15']))
-
-    data['RSI_ratio'] = data['RSI_5']/data['RSI_15']
-    
-    main_fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
-    rsi_trace = go.Scatter(x=data.index, y=data['RSI_ratio'], mode='lines', name='RSI Ratio')
-
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[0.8, 0.2])
+    # Create subplots and add traces
+    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5, row_heights=[0.8, 0.2])
     fig.add_trace(main_fig.data[0], row=1, col=1)
     fig.add_trace(rsi_trace, row=2, col=1)
 
-    fig.update_layout(xaxis_rangeslider_visible=True)
+    # Add horizontal reference lines with row/col specification
+    for y_level, line_name in zip([70, 50, 30], ['Upper Limit', 'Middle Limit', 'Lower Limit']):
+        fig.add_hline(y=y_level, line_dash='dash', line_color='gray', name=line_name, row=2, col=1)
+
+    # Update layout
+    fig.update_layout(
+        xaxis_rangeslider_visible=True,
+        margin=dict(
+            l=10,
+            r=10,
+            b=10,
+            t=10,
+            pad=4
+        )
+    )
+
     return fig
+
 
 def fib_retrace(data):
       # Fibonacci constants

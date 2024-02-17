@@ -24,12 +24,22 @@ h2 {
     gap: 20px;
 }
 
-#graph-indicator, #fib-indicator {
+#graph-indicator, #graph-sub-container {
     flex: 1;
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px;
     background-color: #fff;
+}
+
+#graph-sub-container{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#fib-indicator,#sentiment-indicator{
+    flex: 1;
 }
 
 /* Add some padding to body */

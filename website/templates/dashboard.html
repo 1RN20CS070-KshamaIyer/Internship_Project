@@ -11,10 +11,12 @@
 <body>
     <h1>{{ stockName }}</h1>
     <h2>{{ ticker }}</h2>
-    <div></div>
     <div id="graph-container">
         <div id="graph-indicator"></div>
-        <div id="fib-indicator"></div>
+        <div id="graph-sub-container">
+            <div id="fib-indicator"></div>
+            <div id="sentiment-indicator"></div>
+        </div>
     </div>
     <script>
         var graphData = {{ graph_json | safe }};
@@ -24,6 +26,11 @@
     <script>
         var fibData = {{ fib_json | safe }};
         Plotly.plot('fib-indicator', fibData.data, fibData.layout);
+    </script>
+
+    <script>
+        var sentimentData = {{ sentiment_json | safe }};
+        Plotly.plot('sentiment-indicator', sentimentData.data, sentimentData.layout);
     </script>
 </body>
 </html>

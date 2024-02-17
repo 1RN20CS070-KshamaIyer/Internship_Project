@@ -4,6 +4,9 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import pandas as pd
 import plotly.graph_objects as go
 
+
+colors = ['#1B1A55', '#9290C3']
+
 def load_news(ticker:str):
     fin_url='https://finviz.com/quote.ashx?t='+ticker+'&p=d'
     req=Request(fin_url,headers={'user-agent':'my-app'})
@@ -52,7 +55,7 @@ def applySentimentAnalysis(news):
 def drawGraph(good,bad):
     labels = ['Good News', 'Bad News']
     values = [good, bad]
-    fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3)])
+    fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3,marker=dict(colors=colors))])
     fig.update_traces(textposition='inside', textinfo='percent')
-    fig.update_layout(title='Sentiment Analysis Pie Chart')
+    fig.update_layout(title='Sentiment Analysis Pie Chart', title_x=0.5)
     return fig.to_json()

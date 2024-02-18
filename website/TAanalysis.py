@@ -67,9 +67,10 @@ def call_stochastic(data):
 
 def call_macd(data):
     macd,macd_signal,macd_hist = talib.MACD(data['Close'],fastperiod= 12,slowperiod= 26,signalperiod= 9)
-    macd_trace = go.Scatter(x=data.index, y=macd, mode='lines', name='MACD')
-    signal_trace = go.Scatter(x=data.index, y=macd_signal,mode='lines',name='SIGNAL')
-    hist_trace = go.Bar(x=data.index, y=macd_hist,name="MACD_HIST")
+    macd_trace = go.Scatter(x=data.index,y=macd,mode='lines', name='MACD', marker=dict(color='royalblue')) 
+    signal_trace = go.Scatter(x=data.index,y=macd_signal, mode='lines',name='SIGNAL',marker=dict(color='gold'))  
+    bar_colors = ['#1E5128' if value > 0 else '#950101' for value in macd_hist]
+    hist_trace = go.Bar(x=data.index, y=macd_hist,opacity=0.6,  name="MACD_HIST", marker=dict(color=bar_colors))
     return macd_trace,signal_trace,hist_trace
 
 def call_bollinger(data):

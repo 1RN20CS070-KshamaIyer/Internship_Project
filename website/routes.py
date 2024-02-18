@@ -7,7 +7,8 @@ import datetime as dt
 from website.graph import executeIndicator,fib_retrace
 from pandas_datareader import data as pdr
 from website.FAanalysis import load_news,applySentimentAnalysis,drawGraph,getAdditionalInfo
-
+import talib
+from website.pattern import candlestick_patterns
 
 def db_conn():
     conn = psycopg2.connect(database="mydatabase", host="localhost", user="myuser",password="mypassword",port="5432")
@@ -37,7 +38,6 @@ def viewDashboard(ticker):
     tickerobj = yf.Ticker(ticker)
     priceData = tickerobj.history(period='1d', start='2023-7-1', end=dt.datetime.today())
     priceData['Log_Returns'] = np.log(priceData['Close'] / priceData['Close'].shift(1))
-
     fig = executeIndicator(priceData)
 
     graph_json = fig.to_json()
@@ -53,7 +53,6 @@ def viewDashboard(ticker):
 
     return render_template('dashboard.html', graph_json=graph_json,fib_json=fib_json,sentiment_json=sentiment_json,stockName=stockData[0][1], ticker=stockData[0][2],overview=overview)
 
-
 @app.route('/dashboard/<string:ticker>/news')
 def viewNews(ticker):
     conn = db_conn()
@@ -67,3 +66,23 @@ def viewNews(ticker):
 
     news_data=load_news(ticker)
     return render_template('news.html',news_data=news_data,stockName=stockData[0][1], ticker=stockData[0][2])
+
+@app.route('/dashboard/<string:ticker>/screener')
+def getScreener(ticker):
+    pattern_match={}
+    tickerobj = yf.Ticker(ticker)
+    df = tickerobj.history(period='1d', start='2023-7-1', end=dt.datetime.today())
+    for pattern,pattern_name in candlestick_patterns.items():
+        pattern_function = getattr(talib,pattern)
+        
+        results = pattern_function(df['Open'],df['High'],df['Low'],df['Close'])
+        last = results.tail(1).values[0]
+
+        if last > 0:
+            pattern_match[pattern_name] = 'bullish'
+        elif last < 0:
+            pattern_match[pattern_name] = 'bearish'
+        else:
+            pattern_match[pattern_name] = ''
+    print(pattern_match)
+    return render_template('screener.html',ticker=ticker,pattern_match=pattern_match)

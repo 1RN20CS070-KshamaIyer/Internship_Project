@@ -1,28 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
+
 <body>
+    <a href="/"><button class="btn"><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></button></a>
     <h1>{{ stockName }}</h1>
     <h2>{{ ticker }}</h2>
-    <div id="graph-container">
-        <div id="graph-indicator"></div>
-        <div id="graph-sub-container">
-            <div id="fib-indicator"></div>
-            <div id="sentiment-indicator"></div>
+    <div class="container">
+        <div class="tab">
+            <div class="active-item">Dashboard</div>
+            <a href="/dashboard/{{ ticker }}/news">
+                <div class="item">News</div>
+            </a>
+        </div>
+        <br>
+        <div>
+            <table id="dataTable">
+                <tbody>
+                    {% for key, value in overview.items() %}
+                    {% if loop.index0 % 2 == 0 %}
+                    <tr> <!-- Start a new row for every even index -->
+                        {% endif %}
+
+                        <td class="key">{{ key }}</td>
+                        <td class="value">{{ value }}</td>
+
+                        {% if loop.index0 % 2 != 0 or loop.last %}
+                    </tr> <!-- Close the row for every odd index or at the last iteration -->
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <div id="graph-container">
+            <div id="graph-indicator"></div>
+            <div id="graph-sub-container">
+                <div id="fib-indicator"></div>
+                <div id="sentiment-indicator"></div>
+            </div>
         </div>
     </div>
+
     <script>
         var graphData = {{ graph_json | safe }};
         Plotly.plot('graph-indicator', graphData.data, graphData.layout);
     </script>
-    
+
     <script>
         var fibData = {{ fib_json | safe }};
         Plotly.plot('fib-indicator', fibData.data, fibData.layout);
@@ -32,5 +65,22 @@
         var sentimentData = {{ sentiment_json | safe }};
         Plotly.plot('sentiment-indicator', sentimentData.data, sentimentData.layout);
     </script>
+
+<script>
+    window.addEventListener('resize', function() {
+        var plotContainer = document.getElementById('plot-container');
+        var plotWidth = plotContainer.offsetWidth * 0.1; // Adjust the percentage as needed
+        Plotly.relayout('graph-indicator', {
+            width: plotWidth
+        });
+        Plotly.relayout('fib-indicator', {
+            width: plotWidth
+        });
+        Plotly.relayout('semantic-indicator', {
+            width: plotWidth
+        });
+    });
+</script>
 </body>
+
 </html>

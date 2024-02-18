@@ -6,6 +6,9 @@ import plotly.graph_objects as go
 
 
 colors = ['#1B1A55', '#9290C3']
+req_data = ['Index','P/E','EPS(ttm)','Market Cap'
+       ,'Forward P/E','Dividend Est.','Dividend TTM','Debt/Eq','ROI','Gross Margin',
+       'Volume','ROE','52W Range','Prev Close','Change']
 
 def load_news(ticker:str):
     fin_url='https://finviz.com/quote.ashx?t='+ticker+'&p=d'
@@ -57,7 +60,7 @@ def drawGraph(good,bad):
     values = [good, bad]
     fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3,marker=dict(colors=colors))])
     fig.update_traces(textposition='inside', textinfo='percent')
-    fig.update_layout(title='Sentiment Analysis Pie Chart', title_x=0.5)
+    fig.update_layout(title='Sentiment Analysis Pie Chart', title_x=0.5,width=800)
     return fig.to_json()
 
 def getAdditionalInfo(ticker):
@@ -71,5 +74,6 @@ def getAdditionalInfo(ticker):
         cells = row.find_all('td')
         row_data = [cell.text.strip() for cell in cells]
         for i in range(0,12,2):
-            parsed_data[row_data[i]]=row_data[i+1]
+            if row_data[i] in req_data:
+                parsed_data[row_data[i]]=row_data[i+1]
     return parsed_data

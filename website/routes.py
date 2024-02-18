@@ -52,3 +52,18 @@ def viewDashboard(ticker):
     print(overview)
 
     return render_template('dashboard.html', graph_json=graph_json,fib_json=fib_json,sentiment_json=sentiment_json,stockName=stockData[0][1], ticker=stockData[0][2],overview=overview)
+
+
+@app.route('/dashboard/<string:ticker>/news')
+def viewNews(ticker):
+    conn = db_conn()
+    cur = conn.cursor()
+
+    select_query = f'''SELECT * FROM stocks where tickers='{ticker}';'''
+    cur.execute(select_query)
+    stockData = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    news_data=load_news(ticker)
+    return render_template('news.html',news_data=news_data,stockName=stockData[0][1], ticker=stockData[0][2])

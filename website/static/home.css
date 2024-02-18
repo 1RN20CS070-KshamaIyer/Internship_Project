@@ -13,9 +13,9 @@
   
   /* Container styling */
   .container {
-    max-width: 800px;
+    width: 90%;
     margin: 20px auto;
-    padding: 20px;
+    padding: 1%;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
@@ -38,7 +38,7 @@
   }
   
   th, td {
-    padding: 10px;
+    padding: 0.5% 1%;
     text-align: left;
   }
   
@@ -70,22 +70,22 @@
   
   /* Ticker symbol styling */
   .ticker-symbol {
-    color: #007bff;
+    color: #444;
   }
   
   /* Scrollable table styling */
   .scrollable-table {
-    max-height: 870px;
-    overflow-y: auto;
+    max-height: 45rem;
+    overflow-y: scroll;
   }
   
   .search-container {
-    width: 300px; /* Adjust as needed */
-    margin: 20px 0px;
+    width: 20%; /* Adjust as needed */
+    margin: 1% 0%;
   }
   .search-input {
     width: 100%;
-    padding: 10px;
+    padding: 2%;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;

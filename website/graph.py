@@ -35,7 +35,7 @@ def executeIndicator(data):
 
     # Update layout
     fig.update_layout(
-        width=900,  
+        width=800,  
         height=900
     )
 
@@ -264,5 +264,5 @@ def fib_retrace(data):
     fig.add_trace(go.Scatter(x=data.index, y=[fourth_level] * len(data), mode='lines', name='Fib 0.618'))
     fig.add_trace(go.Scatter(x=data.index, y=[min_value] * len(data), mode='lines', name='Min level'))
     fig.update_layout(title_text="Fibonacci Retracement Levels",
-        title_x=0.5,width=900,height=500 )
+        title_x=0.5,width=800,height=500 )
     return fig

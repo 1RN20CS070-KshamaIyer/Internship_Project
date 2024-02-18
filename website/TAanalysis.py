@@ -1,177 +1,95 @@
 import plotly.graph_objects as go
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 from plotly.subplots import make_subplots
+import talib
 
-def executIndicator(indicator,data):
+def executeIndicator(data):
+    trace0 = candlesticks(data)
+    bb1,bb2,bb3 = call_bollinger(data)
+    atr = call_ATR(data)
+    stoch1,stoch2 = call_stochastic(data)
+    macd,signal,hist = call_macd(data)
+    rsi,ul,ll = call_rsi(data)
+    roc = call_roc(data)
 
-    if indicator=='SMA':
-        fig=call_SMA(data)
-        return fig
-    elif indicator=='ATR':
-        fig=call_ATR(data)
-        return fig
-    elif indicator=='Stochastic':
-        fig=call_stochastic(data)
-        return fig
-    elif indicator=='MACD':
-        fig=call_macd(data)
-        return fig
-    elif indicator=='Bollinger bands':
-        fig=call_bollinger(data)
-        return fig
-    elif indicator=='rate of change':
-        fig=call_rac(data)
-        return fig
-    elif indicator=='RSI':
-        fig=call_rsi(data)
-        return fig
-    elif indicator=='Fibonnaci Retracement':
-        fig=fib_retrace(data)
-        return fig
+    fig = make_subplots(rows=6, cols=1, shared_xaxes=True,row_heights=[1.6, 0.8, 0.8,0.8,0.8,0.8],
+                   vertical_spacing=0.05, subplot_titles=('Bollinger Bands & SMA', 'ATR','Stochastic','MACD','RSI','ROC'))
+    
+    fig.add_trace(trace0['data'][0], row=1, col=1)
+    fig.add_trace(bb1, row=1, col=1)
+    fig.add_trace(bb2, row=1, col=1)
+    fig.add_trace(bb3, row=1, col=1)
+    fig.add_trace(atr, row=2, col=1)
+    fig.add_trace(stoch1, row=3, col=1)
+    fig.add_trace(stoch2, row=3, col=1)
+    fig.add_trace(macd,row=4,col=1)
+    fig.add_trace(signal,row=4,col=1)
+    fig.add_trace(hist,row=4,col=1)
+    fig.add_trace(rsi,row=5,col=1)
+    fig.add_trace(ul,row=5,col=1)
+    fig.add_trace(ll,row=5,col=1)
+    fig.add_trace(roc,row=6,col=1)
 
-def call_SMA(data):
-    data['SMA_5']=data['Close'].rolling(window=5).mean()
-    data['SMA_20']=data['Close'].rolling(window=20).mean()
-    data['SMA_ratio']=data['SMA_20']/data['SMA_5']
+    for y_level, line_name in zip([70, 50, 30], ['Upper Limit', 'Middle Limit', 'Lower Limit']):
+        fig.add_hline(y=y_level, line_dash='dash', line_color='gray', name=line_name, row=5, col=1)
 
-    fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
-    fig.add_trace(go.Scatter(x=data.index, y=data['SMA_5'], mode='lines', name='SMA 5'))
-    fig.add_trace(go.Scatter(x=data.index, y=data['SMA_20'], mode='lines', name='SMA 20'))
+    fig.update_xaxes(row=7, col=1, rangeslider=dict(visible=True))
+
+    fig.update_layout(
+        width=800,  
+        height=900
+    )
+
+    fig.update_layout(xaxis_rangeslider_visible=False)
     return fig
 
-def atr(high, low, close, n=14):
-    tr = np.amax(np.vstack(((high - low).to_numpy(), (abs(high - close)).to_numpy(), (abs(low - close)).to_numpy())).T, axis=1)
-    return pd.Series(tr).rolling(n).mean().to_numpy()
+def candlesticks(data):
+    fig = go.Figure(data=[go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        close=data['Close'],
+        high=data['High'],
+        low=data['Low']
+    )])
+
+    fig.update_layout(xaxis_rangeslider_visible=False)
+    return fig
 
 def call_ATR(data):
-    data['ATR']=atr(data['High'], data['Low'], data['Close'], 20)
-
-    main_fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
-    atr_trace = go.Scatter(x=data.index, y=data['ATR'], mode='lines', name='ATR')
-
-    # Create subplots
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[0.8, 0.2])
-    fig.add_trace(main_fig.data[0], row=1, col=1)
-    fig.add_trace(atr_trace, row=2, col=1)
-
-    # Update layout for better visualization
-    fig.update_layout(xaxis_rangeslider_visible=True)
-    return fig
+    atr=talib.ATR(data['High'], data['Low'], data['Close'], 20)
+    atr_trace = go.Scatter(x=data.index, y=atr, mode='lines', name='ATR')
+    return atr_trace
 
 def call_stochastic(data):
-    data['Lowest_5D'] = data['Low'].rolling(window = 5).min()
-    data['High_5D'] = data['High'].rolling(window = 5).max()
-    data['Lowest_15D'] = data['Low'].rolling(window = 15).min()
-    data['High_15D'] = data['High'].rolling(window = 15).max()
-
-    data['Stochastic_5'] = ((data['Close'] - data['Lowest_5D'])/(data['High_5D'] - data['Lowest_5D']))*100
-    data['Stochastic_15'] = ((data['Close'] - data['Lowest_15D'])/(data['High_15D'] - data['Lowest_15D']))*100
-
-    data['Stochastic_%D_5'] = data['Stochastic_5'].rolling(window = 5).mean()
-    data['Stochastic_%D_15'] = data['Stochastic_5'].rolling(window = 15).mean()
-
-    data['Stochastic_Ratio'] = data['Stochastic_%D_5']/data['Stochastic_%D_15']
-
-    main_fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
-    stoch_trace1 = go.Scatter(x=data.index, y=data['Stochastic_%D_5'], mode='lines', name='Stochastic_%D_5')
-    stoch_trace2 = go.Scatter(x=data.index, y=data['Stochastic_%D_15'], mode='lines', name='Stochastic_%D_15')
-
-    # Create subplots
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[0.8, 0.2])
-    fig.add_trace(main_fig.data[0], row=1, col=1)
-    fig.add_trace(stoch_trace1, row=2, col=1)
-    fig.add_trace(stoch_trace2, row=2, col=1)
-
-    # Update layout for better visualization
-    fig.update_layout(xaxis_rangeslider_visible=True)
-    return fig
+    stoch1,stoch2=talib.STOCH(data['High'],data['Low'],data['Close'],fastk_period=5,slowk_period=15,slowk_matype=0,slowd_period=15,slowd_matype=0)
+    stoch_trace1 = go.Scatter(x=data.index, y=stoch1, mode='lines', name='Stochastic_%D_5')
+    stoch_trace2 = go.Scatter(x=data.index, y=stoch2, mode='lines', name='Stochastic_%D_15')
+    return stoch_trace1, stoch_trace2
 
 def call_macd(data):
-    print("Calling MACD")
-    data['5Ewm'] = data['Close'].ewm(span=5, adjust=False).mean()
-    data['15Ewm'] = data['Close'].ewm(span=15, adjust=False).mean()
-    data['MACD'] = data['15Ewm'] - data['5Ewm']
-
-    main_fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
-    macd_trace = go.Scatter(x=data.index, y=data['MACD'], mode='lines', name='ATR')
-
-    # Create subplots
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[0.8, 0.2])
-    fig.add_trace(main_fig.data[0], row=1, col=1)
-    fig.add_trace(macd_trace, row=2, col=1)
-
-    # Update layout for better visualization
-    fig.update_layout(xaxis_rangeslider_visible=True)
-    return fig
+    macd,macd_signal,macd_hist = talib.MACD(data['Close'],fastperiod= 12,slowperiod= 26,signalperiod= 9)
+    macd_trace = go.Scatter(x=data.index, y=macd, mode='lines', name='MACD')
+    signal_trace = go.Scatter(x=data.index, y=macd_signal,mode='lines',name='SIGNAL')
+    hist_trace = go.Bar(x=data.index, y=macd_hist,name="MACD_HIST")
+    return macd_trace,signal_trace,hist_trace
 
 def call_bollinger(data):
-    data['15MA'] = data['Close'].rolling(window=15).mean()
-    data['SD'] = data['Close'].rolling(window=15).std()
-    data['upperband'] = data['15MA'] + 2*data['SD']
-    data['lowerband'] = data['15MA'] - 2*data['SD']
-    
-    main_fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
-    bollinger_trace1 = go.Scatter(x=data.index, y=data['upperband'], mode='lines', name='Upperband')
-    bollinger_trace2 = go.Scatter(x=data.index, y=data['lowerband'], mode='lines', name='Lowerband')
-    bollinger_trace3 = go.Scatter(x=data.index, y=data['15MA'], mode='lines', name='SMA_15')
+    ub,mb,lb = talib.BBANDS(data['Close'], timeperiod=15, nbdevdn=2.0, nbdevup=2.0, matype=0)
+    bollinger_trace1 = go.Scatter(x=data.index, y=ub, mode='lines', name='Upperband')
+    bollinger_trace2 = go.Scatter(x=data.index, y=mb, mode='lines', name='SMA_15')
+    bollinger_trace3 = go.Scatter(x=data.index, y=lb, mode='lines', name='Lowerband')
+    return bollinger_trace1, bollinger_trace2, bollinger_trace3
 
-    # Create subplots
-    main_fig.add_trace(bollinger_trace1)
-    main_fig.add_trace(bollinger_trace2)
-    main_fig.add_trace(bollinger_trace3)
-
-    # Update layout for better visualization
-    main_fig.update_layout(xaxis_rangeslider_visible=True)
-    return main_fig
-
-def call_rac(data):
-    data['RC'] = data['Close'].pct_change(periods = 20)
-
-    main_fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
-    racd_trace = go.Scatter(x=data.index, y=data['RC'], mode='lines', name='RC')
-
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[0.8, 0.2])
-    fig.add_trace(main_fig.data[0], row=1, col=1)
-    fig.add_trace(racd_trace, row=2, col=1)
-
-    # Update layout for better visualization
-    fig.update_layout(xaxis_rangeslider_visible=True)
-    return fig
+def call_roc(data):
+    roc=talib.ROC(data['Close'],timeperiod=20)
+    roc_trace = go.Scatter(x=data.index, y=roc, mode='lines', name='RC')
+    return roc_trace
 
 def call_rsi(data):
-    data['Diff'] = data['Close'].transform(lambda x: x.diff())
-    data['Up'] = data['Diff']
-    data.loc[(data['Up']<0), 'Up'] = 0
-
-    data['Down'] = data['Diff']
-    data.loc[(data['Down']>0), 'Down'] = 0 
-    data['Down'] = abs(data['Down'])
-
-    data['avg_5up'] = data['Up'].rolling(window=5).mean()
-    data['avg_5down'] = data['Down'].rolling(window=5).mean()
-
-    data['avg_15up'] = data['Up'].rolling(window=15).mean()
-    data['avg_15down'] = data['Down'].rolling(window=15).mean()
-
-    data['RS_5'] = data['avg_5up'] / data['avg_5down']
-    data['RS_15'] = data['avg_15up'] / data['avg_15down']
-
-    data['RSI_5'] = 100 - (100/(1+data['RS_5']))
-    data['RSI_15'] = 100 - (100/(1+data['RS_15']))
-
-    data['RSI_ratio'] = data['RSI_5']/data['RSI_15']
-    
-    main_fig=go.Figure(data=[go.Candlestick(x=data.index,open=data['Open'],close=data['Close'],high=data['High'],low=data['Low'])])
-    rsi_trace = go.Scatter(x=data.index, y=data['RSI_ratio'], mode='lines', name='RSI Ratio')
-
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.5,row_heights=[0.8, 0.2])
-    fig.add_trace(main_fig.data[0], row=1, col=1)
-    fig.add_trace(rsi_trace, row=2, col=1)
-
-    fig.update_layout(xaxis_rangeslider_visible=True)
-    return fig
+    rsi = talib.RSI(data['Close'],timeperiod=20)
+    rsi_trace = go.Scatter(x=data.index,y=rsi,mode='lines',name='RSI',line=dict(color='blue', width=2))
+    ul = go.Scatter(x=data.index, y=[70] * len(data.index), mode='lines', line=dict(color='grey', width=2, dash='dash'), name='UpperBound')
+    ll = go.Scatter(x=data.index, y=[30] * len(data.index), mode='lines', line=dict(color='grey', width=2, dash='dash'), name='LowerBound')
+    return rsi_trace,ul,ll
 
 def fib_retrace(data):
       # Fibonacci constants

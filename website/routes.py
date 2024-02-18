@@ -1,11 +1,9 @@
-from flask import render_template,url_for,redirect,request,send_file,jsonify,session
+from flask import render_template
 from website import app
 import psycopg2
 import yfinance as yf
-import numpy as np
 import datetime as dt
-from website.graph import executeIndicator,fib_retrace
-from pandas_datareader import data as pdr
+from website.TAanalysis import executeIndicator,fib_retrace
 from website.FAanalysis import load_news,applySentimentAnalysis,drawGraph,getAdditionalInfo
 import talib
 from website.pattern import candlestick_patterns
@@ -37,7 +35,6 @@ def viewDashboard(ticker):
 
     tickerobj = yf.Ticker(ticker)
     priceData = tickerobj.history(period='1d', start='2023-7-1', end=dt.datetime.today())
-    priceData['Log_Returns'] = np.log(priceData['Close'] / priceData['Close'].shift(1))
     fig = executeIndicator(priceData)
 
     graph_json = fig.to_json()

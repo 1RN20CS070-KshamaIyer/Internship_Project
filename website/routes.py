@@ -3,7 +3,7 @@ from website import app
 import psycopg2
 import yfinance as yf
 import datetime as dt
-from website.TAanalysis import executeIndicator,fib_retrace
+from website.TAanalysis import candlesticks, executeIndicator,fib_retrace
 from website.FAanalysis import load_news,applySentimentAnalysis,drawGraph,getAdditionalInfo
 import talib
 from website.pattern import candlestick_patterns
@@ -66,6 +66,16 @@ def viewNews(ticker):
 
 @app.route('/dashboard/<string:ticker>/screener')
 def getScreener(ticker):
+
+    conn = db_conn()
+    cur = conn.cursor()
+
+    select_query = f'''SELECT * FROM stocks where tickers='{ticker}';'''
+    cur.execute(select_query)
+    stockData = cur.fetchall()
+    cur.close()
+    conn.close()
+
     pattern_match={}
     tickerobj = yf.Ticker(ticker)
     df = tickerobj.history(period='1d', start='2023-7-1', end=dt.datetime.today())
@@ -80,4 +90,14 @@ def getScreener(ticker):
         elif last < 0:
             pattern_match[pattern_name] = 'bearish'
     print(pattern_match)
-    return render_template('screener.html',ticker=ticker,pattern_match=pattern_match)
+
+    tickerobj = yf.Ticker(ticker)
+    priceData = tickerobj.history(period='1d', start='2023-7-1', end=dt.datetime.today())
+    fig = candlesticks(priceData)
+
+    graph_json = fig.to_json()
+
+    return render_template('screener.html',stockName=stockData[0][1], ticker=stockData[0][2],pattern_match=pattern_match, graph_json=graph_json)
+
+
+

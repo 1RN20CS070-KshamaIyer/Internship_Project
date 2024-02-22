@@ -48,13 +48,65 @@ body {
     gap: 1%;
 }
 
-#graph-indicator {
+#graph-indicator, #graph-sub-container {
     flex: 1;
     border: 1px solid #ccc;
     border-radius: 5px;
     width:50%;
     background-color: #fff;
 }
+
+#graph-sub-container{
+    display: flex;
+    flex-direction: column;
+    gap: 2%;
+}
+
+#fib-indicator,#sentiment-indicator{
+    flex: 1;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+  }
+  
+  th, td {
+    padding: 0.5% 1%;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #e6e6e6;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  tr:hover {
+    background-color: #f2f2f2; /* Adjust hover color */
+  }
+  
+  /* Links */
+  a {
+    color: #333;
+    text-decoration: none; /* Remove underline */
+  }
+  
+  a:hover {
+    color: #666; /* Adjust hover color */
+  }
+  
+  /* Company name styling */
+  .key {
+    font-weight: bold;
+    color: #444;
+  }
+  
+  /* Ticker symbol styling */
+  .value {
+    color: #444;
+  }
 
   .tab{
     display: flex;
@@ -74,4 +126,24 @@ body {
   .tab .item{
     color: #4444449c;
   }
+
+
+
+  .pattern-container {
+    display: flex;
+    justify-content: space-between;
+    width: 30%;
+  }
+  
+  .green-box {
+    background-color: green;
+    color: white;
+    padding: 5px 30px;
+}
+
+.red-box {
+    background-color: red;
+    color: white;
+    padding: 5px 30px;
+}
 

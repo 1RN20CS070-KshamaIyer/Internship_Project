@@ -7,7 +7,7 @@
     <title>Screener</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='screener.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
@@ -30,12 +30,23 @@
             <div id="graph-indicator"></div>
 
         </div>
-        <div>
+        
             {% for key, value in pattern_match.items() %}
+            <div class="pattern-container">
             <h4>{{ key }}</h4>
+            {% if value == 'bullish' %}
+            <p class="green-box">{{ value }}</p>
+            {% elif value == 'bearish' %}
+            <p class=" red-box">{{ value }}</p>
+            {% else %}
             <p>{{ value }}</p>
-            {% endfor %}
+            {% endif %}
+    
         </div>
+            {% endfor %}
+           
+       
+        
     </div>
 
     <script>

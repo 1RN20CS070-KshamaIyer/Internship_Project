@@ -28,25 +28,24 @@
         <br>
         <div id="graph-container">
             <div id="graph-indicator"></div>
-
         </div>
+        <div class="caption"><h4>Latest Candlestick patterns found</h4></div>
         
+        <br>
+        <div>
             {% for key, value in pattern_match.items() %}
             <div class="pattern-container">
-            <h4>{{ key }}</h4>
-            {% if value == 'bullish' %}
-            <p class="green-box">{{ value }}</p>
-            {% elif value == 'bearish' %}
-            <p class=" red-box">{{ value }}</p>
-            {% else %}
-            <p>{{ value }}</p>
-            {% endif %}
-    
-        </div>
+                <h4>{{ key }}</h4>
+                {% if value == 'bullish' %}
+                <p class="green-box">{{ value }}</p>
+                {% elif value == 'bearish' %}
+                <p class=" red-box">{{ value }}</p>
+                {% else %}
+                <p>{{ value }}</p>
+                {% endif %}
+            </div>
             {% endfor %}
-           
-       
-        
+        </div>
     </div>
 
     <script>

@@ -52,6 +52,10 @@ def candlesticks(data):
     )])
 
     fig.update_layout(xaxis_rangeslider_visible=False)
+    fig.update_layout(
+        width=1700,  
+        height=500
+    )
     return fig
 
 def call_ATR(data):

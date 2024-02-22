@@ -29,6 +29,8 @@ body {
     color: #444;
   }
 
+  
+
   .btn {
     background-color: rgb(109, 107, 107);
     border: none;
@@ -48,22 +50,12 @@ body {
     gap: 1%;
 }
 
-#graph-indicator, #graph-sub-container {
+#graph-indicator {
     flex: 1;
     border: 1px solid #ccc;
     border-radius: 5px;
     width:50%;
     background-color: #fff;
-}
-
-#graph-sub-container{
-    display: flex;
-    flex-direction: column;
-    gap: 2%;
-}
-
-#fib-indicator,#sentiment-indicator{
-    flex: 1;
 }
 
 table {
@@ -147,3 +139,6 @@ table {
     padding: 5px 30px;
 }
 
+.caption{
+  margin-left: 40% ;
+}

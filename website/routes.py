@@ -79,7 +79,5 @@ def getScreener(ticker):
             pattern_match[pattern_name] = 'bullish'
         elif last < 0:
             pattern_match[pattern_name] = 'bearish'
-        else:
-            pattern_match[pattern_name] = ''
     print(pattern_match)
     return render_template('screener.html',ticker=ticker,pattern_match=pattern_match)

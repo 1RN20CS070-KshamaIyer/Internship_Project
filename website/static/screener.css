@@ -1,0 +1,77 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0%;
+  }
+  
+  .container {
+    width: 90%;
+    margin: 1% auto;
+    padding: 2%;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  }
+  
+  h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.1%;
+    margin-left:3%;
+    color: #222;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    font-weight: normal;
+    margin-bottom: 0.1%;
+    margin-left:3%;
+    color: #444;
+  }
+
+  .btn {
+    background-color: rgb(109, 107, 107);
+    border: none;
+    color: white;
+    padding: 10px 25px;
+    font-size: 25px;
+    cursor: pointer;
+    margin-top: 1%;
+    margin-left: 3%;
+    border-radius: 20px;
+}
+
+
+#graph-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1%;
+}
+
+#graph-indicator {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width:50%;
+    background-color: #fff;
+}
+
+  .tab{
+    display: flex;
+    direction: column;
+    font-weight: bold;
+    font-size: 18px;
+    gap: 1%;
+  }
+
+  .tab .active-item{
+    color: #222;
+    padding-bottom: 0.5%;
+    border-bottom: 3px solid #555555c2;
+    border-radius: 2px;
+  }
+
+  .tab .item{
+    color: #4444449c;
+  }
+

@@ -1,11 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Screener</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
+
 <body>
-    screener
+    <a href="/"><button class="btn"><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></button></a>
+    <h1>{{ stockName }}</h1>
+    <h2>{{ ticker }}</h2>
+    <div class="container">
+        <div class="tab">
+            <a href="/dashboard/{{ ticker }}">
+                <div class="item">Dashboard</div>
+            </a>
+            <a href="/dashboard/{{ ticker }}/news">
+                <div class="item">News</div>
+            </a>
+            <div class="active-item">Screener</div>
+        </div>
+        <br>
+        <div id="graph-container">
+            <div id="graph-indicator"></div>
+
+        </div>
+        <div>
+            {% for key, value in pattern_match.items() %}
+            <h4>{{ key }}</h4>
+            <p>{{ value }}</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        var graphData = {{ graph_json | safe }};
+        Plotly.plot('graph-indicator', graphData.data, graphData.layout);
+    </script>
+
 </body>
+
 </html>

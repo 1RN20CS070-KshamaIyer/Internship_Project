@@ -40,8 +40,6 @@ def applySentimentAnalysis(news):
 
     # Extract compound scores for positivity and negativity
     df["compound"] = df["scores"].apply(lambda x: x["compound"])
-    df["positive"] = df["scores"].apply(lambda x: x["pos"])
-    df["negative"] = df["scores"].apply(lambda x: x["neg"])
 
     # Determine good and bad news based on thresholds (adjust as needed)
     threshold = 0.2

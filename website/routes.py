@@ -23,7 +23,7 @@ def home():
     return render_template('home.html',data=data)
 
 @app.route('/dashboard/<string:ticker>')
-def viewDashboard(ticker):
+async def viewDashboard(ticker):
     conn = db_conn()
     cur = conn.cursor()
 
@@ -46,7 +46,6 @@ def viewDashboard(ticker):
     sentiment_json=drawGraph(pos,neg)
 
     overview = getAdditionalInfo(ticker)
-    print(overview)
 
     return render_template('dashboard.html', graph_json=graph_json,fib_json=fib_json,sentiment_json=sentiment_json,stockName=stockData[0][1], ticker=stockData[0][2],overview=overview)
 
@@ -89,7 +88,6 @@ def getScreener(ticker):
             pattern_match[pattern_name] = 'bullish'
         elif last < 0:
             pattern_match[pattern_name] = 'bearish'
-    print(pattern_match)
 
     tickerobj = yf.Ticker(ticker)
     priceData = tickerobj.history(period='1d', start='2023-7-1', end=dt.datetime.today())

@@ -14,7 +14,7 @@ def load_news(ticker:str):
     fin_url='https://finviz.com/quote.ashx?t='+ticker+'&p=d'
     req=Request(fin_url,headers={'user-agent':'my-app'})
     response=urlopen(req)
-    html=BeautifulSoup(response, 'html')
+    html=BeautifulSoup(response, features="lxml")
     news_table=html.find(id="news-table")
     parsed_data=[]
     for row in news_table.findAll('tr'):
@@ -67,7 +67,7 @@ def getAdditionalInfo(ticker):
     fin_url='https://finviz.com/quote.ashx?t='+ticker+'&p=d'
     req=Request(fin_url,headers={'user-agent':'my-app'})
     response=urlopen(req)
-    html=BeautifulSoup(response, 'html')
+    html=BeautifulSoup(response,features='lxml')
     add_table=html.find('div',"screener_snapshot-table-wrapper")
     parsed_data={}
     for row in add_table.findAll('tr'):

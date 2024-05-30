@@ -26,6 +26,11 @@
             </a>
         </div>
         <br>
+        <div id="sentiment-indicator"></div>
+        <script>
+            var sentimentData = {{ sentiment_json | safe }};
+            Plotly.plot('sentiment-indicator', sentimentData.data, sentimentData.layout);
+        </script>
         <div class="scrollable-table">
             <table id="dataTable">
                 <thead>

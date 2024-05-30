@@ -64,15 +64,12 @@
         Plotly.plot('fib-indicator', fibData.data, fibData.layout);
     </script>
 
-    <script>
-        var sentimentData = {{ sentiment_json | safe }};
-        Plotly.plot('sentiment-indicator', sentimentData.data, sentimentData.layout);
-    </script>
+    
 
 <script>
     window.addEventListener('resize', function() {
         var plotContainer = document.getElementById('plot-container');
-        var plotWidth = plotContainer.offsetWidth * 0.1; // Adjust the percentage as needed
+        var plotWidth = plotContainer.offsetWidth * 0.05; // Adjust the percentage as needed
         Plotly.relayout('graph-indicator', {
             width: plotWidth
         });

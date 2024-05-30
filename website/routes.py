@@ -41,13 +41,9 @@ async def viewDashboard(ticker):
     fib = fib_retrace(priceData)
     fib_json=fib.to_json()
 
-    news_data=load_news(ticker)
-    pos,neg = applySentimentAnalysis(news_data)
-    sentiment_json=drawGraph(pos,neg)
-
     overview = getAdditionalInfo(ticker)
 
-    return render_template('dashboard.html', graph_json=graph_json,fib_json=fib_json,sentiment_json=sentiment_json,stockName=stockData[0][1], ticker=stockData[0][2],overview=overview)
+    return render_template('dashboard.html', graph_json=graph_json,fib_json=fib_json,stockName=stockData[0][1], ticker=stockData[0][2],overview=overview)
 
 @app.route('/dashboard/<string:ticker>/news')
 def viewNews(ticker):
@@ -61,7 +57,9 @@ def viewNews(ticker):
     conn.close()
 
     news_data=load_news(ticker)
-    return render_template('news.html',news_data=news_data,stockName=stockData[0][1], ticker=stockData[0][2])
+    pos,neg = applySentimentAnalysis(news_data)
+    sentiment_json=drawGraph(pos,neg)
+    return render_template('news.html',news_data=news_data,stockName=stockData[0][1], ticker=stockData[0][2],sentiment_json=sentiment_json)
 
 @app.route('/dashboard/<string:ticker>/screener')
 def getScreener(ticker):
